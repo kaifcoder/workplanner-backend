@@ -2,6 +2,8 @@ package com.example.servicemarketplace.config;
 
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.*;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.*;
 
 @Configuration
@@ -20,7 +22,13 @@ public class SwaggerConfig {
           .email("johndoe@example.com"))
         .license(new License()
           .name("Apache 2.0")
-          .url("https://www.apache.org/licenses/LICENSE-2.0.html")));
+          .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
+            .components(new Components()
+                    .addSecuritySchemes("basicAuth",
+                            new SecurityScheme()
+                                    .type(SecurityScheme.Type.HTTP)
+                                    .scheme("basic")))
+            .addSecurityItem(new SecurityRequirement().addList("basicAuth"));
   }
 
 }

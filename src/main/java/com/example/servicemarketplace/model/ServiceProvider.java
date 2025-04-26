@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import java.io.Serializable;
 
 @Entity
@@ -20,5 +23,6 @@ public class ServiceProvider implements Serializable {
   private String location;
   private String contact;
   @ManyToOne
+  @Cascade(CascadeType.ALL)
   private ServiceCategory serviceCategory;
 }
