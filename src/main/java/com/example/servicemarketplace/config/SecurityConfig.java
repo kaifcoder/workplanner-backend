@@ -43,5 +43,6 @@ public class SecurityConfig {
                         .roles(user.getRole().replace("ROLE_", ""))
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
     }
 }
