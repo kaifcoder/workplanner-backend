@@ -1,5 +1,6 @@
 package com.example.servicemarketplace.controller;
 
+import com.example.servicemarketplace.Dto.ServiceProviderDto;
 import com.example.servicemarketplace.model.ServiceProvider;
 import com.example.servicemarketplace.service.ServiceProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class ServiceProviderController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public ServiceProvider create(@RequestBody ServiceProvider entity) {
+  public ServiceProvider create(@RequestBody ServiceProviderDto entity) {
     return ServiceProviderService.save(entity);
   }
 

@@ -8,6 +8,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,13 +17,20 @@ import java.io.Serializable;
 public class ServiceProvider implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
+
   private String name;
-  private String category;
-  private double cost;
+
   private String location;
+
   private String contact;
-  @ManyToOne
-  @Cascade(CascadeType.ALL)
-  private ServiceCategory serviceCategory;
+
+  @ManyToMany
+  @JoinTable(
+          name = "provider_category",
+          joinColumns = @JoinColumn(name = "provider_id"),
+          inverseJoinColumns = @JoinColumn(name = "category_id")
+  )
+  private List<ServiceCategory> serviceCategories;
 }
+
