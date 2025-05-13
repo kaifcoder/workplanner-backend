@@ -1,8 +1,11 @@
 package com.example.servicemarketplace.controller;
 
 
+import com.example.servicemarketplace.Dto.LoginRequest;
+import com.example.servicemarketplace.Dto.Response;
 import com.example.servicemarketplace.model.Users;
 import com.example.servicemarketplace.repository.UserRepository;
+import com.example.servicemarketplace.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,9 +22,12 @@ public class AuthController {
     private UserRepository userRepo;
 
     @Autowired
-    private PasswordEncoder encoder; 
+    private PasswordEncoder encoder;
 
-    @PostMapping("/register")
+    @Autowired
+    private JwtUtils jwtUtils;
+
+  ;  @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Users user) {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setRole("ROLE_USER");
@@ -29,9 +35,19 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login() {
-        // Spring Basic Auth handles login, this just confirms it
-        return ResponseEntity.ok("Login Successful");
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        Users user = userRepo.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("User Not Found with username: " + loginRequest.getUsername()));
+        if (!encoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity.badRequest().body("Invalid Password");
+        }
+        Response response = Response.builder()
+                .message("Login successful")
+                .status("success")
+                .token(jwtUtils.generateToken(user))
+                .build();
+        return ResponseEntity.ok(response);
+
     }
 
 }

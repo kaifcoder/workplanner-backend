@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Type;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -21,18 +19,20 @@ public class ServiceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String serviceName;
+    private String name;
     private String description;
     private Double price;
-    private Integer durationInMinutes;
+    private String location;
+    private String providerName;
+    private String providerPhone;
 
     // Each service belongs to one category
     @ManyToOne
     @JoinColumn(name = "category_id")
     private ServiceCategory category;
 
-
-    private boolean active = true;
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
+    private List<Feedback> feedbacks;
 }
 
 

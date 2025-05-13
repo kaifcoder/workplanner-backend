@@ -24,11 +24,11 @@ public class SwaggerConfig {
           .name("Apache 2.0")
           .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
             .components(new Components()
-                    .addSecuritySchemes("basicAuth",
+                    .addSecuritySchemes("apikey",
                             new SecurityScheme()
-                                    .type(SecurityScheme.Type.HTTP)
-                                    .scheme("basic")))
-            .addSecurityItem(new SecurityRequirement().addList("basicAuth"));
+                                    .type(SecurityScheme.Type.APIKEY)
+                                    .scheme("apikey")))
+            .addSecurityItem(new SecurityRequirement().addList("apikey"));
   }
 
 }

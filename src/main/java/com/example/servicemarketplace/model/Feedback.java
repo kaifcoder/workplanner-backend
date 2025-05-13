@@ -16,4 +16,9 @@ public class Feedback implements Serializable {
   private Long id;
   private String content;
   private int rating;
+  @ManyToOne
+  @JoinColumn(
+          name = "service_id"
+  )
+  private ServiceEntity service;
 }

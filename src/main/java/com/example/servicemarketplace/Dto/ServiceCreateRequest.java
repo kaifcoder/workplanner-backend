@@ -8,10 +8,10 @@ import java.math.BigDecimal;
 public class ServiceCreateRequest {
     private String name;
     private String description;
-    private BigDecimal cost;
+    private Double cost;
     private String location;
     private String providerName;
     private String contactInfo;
-    private String categoryName;
+    private Long categoryId;
 }
 
