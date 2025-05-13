@@ -1,6 +1,7 @@
 package com.example.servicemarketplace.controller;
 
-import com.example.servicemarketplace.model.Userentity;
+
+import com.example.servicemarketplace.model.Users;
 import com.example.servicemarketplace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,15 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepo;
-    @Autowired private PasswordEncoder encoder; //
+
+    @Autowired
+    private PasswordEncoder encoder; 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Userentity userentity) {
-        userentity.setPassword(encoder.encode(userentity.getPassword()));
-        userentity.setRole("ROLE_USER");
-        return ResponseEntity.ok(userRepo.save(userentity));
+    public ResponseEntity<?> register(@RequestBody Users user) {
+        user.setPassword(encoder.encode(user.getPassword()));
+        user.setRole("ROLE_USER");
+        return ResponseEntity.ok(userRepo.save(user));
     }
 
     @PostMapping("/login")

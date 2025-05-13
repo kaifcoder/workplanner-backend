@@ -31,10 +31,6 @@ public class ServiceEntity {
     @JoinColumn(name = "category_id")
     private ServiceCategory category;
 
-    // Each service belongs to one provider
-    @ManyToOne
-    @JoinColumn(name = "provider_id")
-    private ServiceProvider provider;
 
     private boolean active = true;
 }

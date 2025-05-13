@@ -11,11 +11,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Userentity {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+    private Long id;
     private String username;
     private String password;
     private String role;

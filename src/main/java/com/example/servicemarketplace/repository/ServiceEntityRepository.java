@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ServiceEntityRepository extends JpaRepository<ServiceEntity, Long> {
     // You can add custom queries if needed later
+
 }
 

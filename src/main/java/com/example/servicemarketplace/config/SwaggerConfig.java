@@ -13,8 +13,8 @@ public class SwaggerConfig {
   public OpenAPI api() {
     return new OpenAPI()
         .info(new Info()
-        .title("servicemarketplace API")
-        .description("API documentation for my Spring Boot application.")
+        .title("Service Marketplace API")
+        .description("API documentation for the Service Marketplace application.")
         .termsOfService("https://example.com/terms")
         .contact(new Contact()
           .name("John Doe")

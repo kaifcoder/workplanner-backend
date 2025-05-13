@@ -13,9 +13,7 @@ import java.io.Serializable;
 public class Feedback implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
   private String content;
   private int rating;
-  @ManyToOne
-  private ServiceProvider provider;
 }
