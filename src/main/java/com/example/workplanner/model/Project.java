@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.springframework.scheduling.config.Task;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -13,23 +14,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ServiceEntity {
-
+public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
     private String description;
-    private Double price;
-    private String location;
-    private String providerName;
-    private String providerPhone;
 
-    // Each service belongs to one category
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private ServiceCategory category;
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
+    @Temporal(TemporalType.DATE)
+    private Date endDate;
+
+    @OneToMany(mappedBy = "project")
+    private List<Task> tasks;
 }
-
 
