@@ -21,12 +21,14 @@ public class Project {
 
     private String name;
     private String description;
-
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private Users createdBy;
     @Temporal(TemporalType.DATE)
     private Date startDate;
     @Temporal(TemporalType.DATE)
     private Date endDate;
-
+    private List<Users> members;
     @OneToMany(mappedBy = "project")
     private List<Task> tasks;
 }
