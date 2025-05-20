@@ -14,4 +14,7 @@ public class TaskDto {
     private Long assignedToId;
     private Long suggestedById;
     private Long projectId;
+    private UserDto assignedToUser;
+    private UserDto suggestedByUser;
+    private ProjectDto project;
 }

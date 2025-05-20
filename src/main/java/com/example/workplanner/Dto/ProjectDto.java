@@ -13,4 +13,5 @@ public class ProjectDto {
     private Date endDate;
     private Set<Long> memberIds;
     private Set<Long> taskIds;
+    private UserDto createdBy;
 }
