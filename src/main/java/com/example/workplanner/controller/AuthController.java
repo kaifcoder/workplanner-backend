@@ -7,6 +7,8 @@ import com.example.workplanner.model.Users;
 import com.example.workplanner.repository.UserRepository;
 import com.example.workplanner.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,13 +43,20 @@ public class AuthController {
         if (!encoder.matches(loginRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.badRequest().body("Invalid Password");
         }
+        String jwt = jwtUtils.generateToken(user);
         Response response = Response.builder()
                 .message("Login successful")
                 .status("success")
-                .token(jwtUtils.generateToken(user))
+                .token(jwt)
                 .build();
-        return ResponseEntity.ok(response);
-
+        ResponseCookie springCookie = ResponseCookie.from("jwt", jwt)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, springCookie.toString())
+                .body(response);
     }
 
 }
