@@ -14,4 +14,5 @@ public class ProjectDto {
     private Set<Long> memberIds;
     private Set<Long> taskIds;
     private UserDto createdBy;
+    private Set<UserDto> memberDtos;
 }
