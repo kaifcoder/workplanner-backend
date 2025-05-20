@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
 
 import java.util.Date;
 
@@ -41,9 +40,6 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
-
-
-
 
 }
 

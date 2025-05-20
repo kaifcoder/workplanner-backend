@@ -3,6 +3,8 @@ package com.example.workplanner.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -15,6 +17,14 @@ public class Users {
     private String username;
     private String password;
     private String role;
+
+    @ManyToMany
+    @JoinTable(
+        name = "project_members",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
+    private Set<Project> projects;
 
 
 }

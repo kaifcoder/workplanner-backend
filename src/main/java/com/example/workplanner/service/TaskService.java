@@ -12,7 +12,6 @@ public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
-    private CustomUserDetailService customUserDetailService;
 
     public Task getTaskById(Long id) {
         return taskRepository.findById(id).orElse(null);

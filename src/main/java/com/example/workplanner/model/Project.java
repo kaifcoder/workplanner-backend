@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -31,5 +32,8 @@ public class Project {
 
     @OneToMany(mappedBy = "project")
     private List<Task> tasks;
+
+    @ManyToMany(mappedBy = "projects")
+    private Set<Users> members;
 }
 
