@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.scheduling.config.Task;
 import java.util.Date;
 import java.util.List;
 
@@ -21,14 +20,15 @@ public class Project {
 
     private String name;
     private String description;
+
     @ManyToOne
     @JoinColumn(name="user_id")
     private Users createdBy;
-    @Temporal(TemporalType.DATE)
-    private Date startDate;
+
     @Temporal(TemporalType.DATE)
     private Date endDate;
-    private List<Users> members;
+
+
     @OneToMany(mappedBy = "project")
     private List<Task> tasks;
 }
