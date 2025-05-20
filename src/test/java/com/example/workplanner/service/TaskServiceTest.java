@@ -60,6 +60,10 @@ class TaskServiceTest {
         dto.setDueDate(new Date());
         when(projectRepository.findById(anyLong())).thenReturn(Optional.of(mockProject));
         when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
+        // Mock SecurityContextHolder to return mockUser as the authenticated user
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn(mockUser.getUsername());
+        SecurityContextHolder.getContext().setAuthentication(auth);
         TaskDto result = taskService.suggestTask(1L, dto);
         assertEquals("TaskTitle", result.getTitle());
         assertEquals(TaskStatus.SUGGESTED.name(), result.getStatus());
@@ -111,12 +115,18 @@ class TaskServiceTest {
         Task task1 = new Task();
         task1.setId(1L);
         task1.setProject(mockProject);
+        task1.setSuggestedBy(mockUser);
+        task1.setStatus(TaskStatus.SUGGESTED);
         Task task2 = new Task();
         task2.setId(2L);
         task2.setProject(mockProject);
+        task2.setSuggestedBy(mockUser);
+        task2.setStatus(TaskStatus.SUGGESTED);
         when(taskRepository.findByProjectId(1L)).thenReturn(Arrays.asList(task1, task2));
         List<TaskDto> result = taskService.getTasksForProject(1L);
         assertEquals(2, result.size());
+        assertNotNull(result.get(0).getProject());
+        assertNotNull(result.get(0).getSuggestedByUser());
     }
 
     @Test
@@ -124,9 +134,18 @@ class TaskServiceTest {
         Task task = new Task();
         task.setId(1L);
         task.setAssignedTo(mockUser);
+        task.setProject(mockProject);
+        task.setSuggestedBy(mockUser);
+        task.setStatus(TaskStatus.ASSIGNED);
+        // Mock SecurityContextHolder to return mockUser as the authenticated user
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn(mockUser.getUsername());
+        SecurityContextHolder.getContext().setAuthentication(auth);
         when(taskRepository.findByAssignedTo(mockUser)).thenReturn(Collections.singletonList(task));
         List<TaskDto> result = taskService.getAssignedTasksForCurrentUser();
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).getId());
+        assertNotNull(result.get(0).getProject());
+        assertNotNull(result.get(0).getAssignedToUser());
     }
 }
