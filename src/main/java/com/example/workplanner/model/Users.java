@@ -26,5 +26,11 @@ public class Users {
     )
     private Set<Project> projects;
 
+    @OneToMany(mappedBy = "assignedTo")
+    private Set<Task> assignedTasks;
+
+    @OneToMany(mappedBy = "suggestedBy")
+    private Set<Task> suggestedTasks;
+
 
 }
