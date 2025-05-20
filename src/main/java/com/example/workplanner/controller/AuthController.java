@@ -32,7 +32,12 @@ public class AuthController {
   ;  @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Users user) {
         user.setPassword(encoder.encode(user.getPassword()));
-        user.setRole("ROLE_USER");
+        // Default to TEAM_MEMBER if not provided, else allow MANAGER if explicitly set
+        if (user.getRole() == null || (!user.getRole().equalsIgnoreCase("MANAGER") && !user.getRole().equalsIgnoreCase("TEAM_MEMBER"))) {
+            user.setRole("TEAM_MEMBER");
+        } else {
+            user.setRole(user.getRole().toUpperCase());
+        }
         return ResponseEntity.ok(userRepo.save(user));
     }
 
