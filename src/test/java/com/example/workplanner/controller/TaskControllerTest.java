@@ -9,16 +9,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithMockUser;
-
 import java.util.Arrays;
-import java.util.Date;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import org.springframework.security.test.context.support.WithMockUser;
 
 class TaskControllerTest {
     @Mock
@@ -40,8 +39,10 @@ class TaskControllerTest {
         dto.setStatus(TaskStatus.SUGGESTED.name());
         when(taskService.suggestTask(anyLong(), any(TaskDto.class))).thenReturn(dto);
         ResponseEntity<TaskDto> response = taskController.suggestTask(1L, dto);
-        assertEquals("Test Task", response.getBody().getTitle());
-        assertEquals(TaskStatus.SUGGESTED.name(), response.getBody().getStatus());
+        assertNotNull(response.getBody());
+        TaskDto responseBody = response.getBody();
+        assertEquals("Test Task", responseBody.getTitle());
+        assertEquals(TaskStatus.SUGGESTED.name(), responseBody.getStatus());
     }
 
     @Test
