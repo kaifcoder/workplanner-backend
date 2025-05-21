@@ -27,6 +27,8 @@ public class TaskService {
     private UserRepository userRepository;
     @Autowired
     private ProjectRepository projectRepository;
+    @Autowired
+    private EmailService emailService;
 
 
     public Task getTaskById(Long id) {
@@ -77,7 +79,16 @@ public class TaskService {
         Users user = userRepository.findById(userId).orElseThrow();
         task.setAssignedTo(user);
         task.setStatus(TaskStatus.ASSIGNED);
-        return toDto(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        // Send email notification
+        if (user.getUsername() != null && user.getUsername().contains("@")) { // crude email check
+            emailService.sendEmail(
+                user.getUsername(),
+                "Task Assigned: " + task.getTitle(),
+                "You have been assigned a new task: " + task.getTitle() + "\nDescription: " + task.getDescription()
+            );
+        }
+        return toDto(savedTask);
     }
 
     public List<TaskDto> getTasksForProject(Long projectId) {
