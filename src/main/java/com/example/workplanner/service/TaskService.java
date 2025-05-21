@@ -91,6 +91,28 @@ public class TaskService {
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    // For manager: all filters optional
+    public List<TaskDto> getTasksByFilters(TaskStatus status, Long teamMemberId, Long projectId) {
+        List<Task> tasks = taskRepository.findAll();
+        return tasks.stream()
+                .filter(t -> status == null || t.getStatus() == status)
+                .filter(t -> teamMemberId == null || (t.getAssignedTo() != null && t.getAssignedTo().getId().equals(teamMemberId)))
+                .filter(t -> projectId == null || (t.getProject() != null && t.getProject().getId().equals(projectId)))
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // For team member: only their own tasks, filter by status and project
+    public List<TaskDto> getTasksForCurrentUserWithFilters(TaskStatus status, Long projectId) {
+        Users currentUser = getCurrentUser();
+        List<Task> tasks = taskRepository.findByAssignedTo(currentUser);
+        return tasks.stream()
+                .filter(t -> status == null || t.getStatus() == status)
+                .filter(t -> projectId == null || (t.getProject() != null && t.getProject().getId().equals(projectId)))
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     private TaskDto toDto(Task task) {
         TaskDto dto = new TaskDto();
         dto.setId(task.getId());
