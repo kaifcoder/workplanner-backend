@@ -27,6 +27,8 @@ public class TaskService {
     private UserRepository userRepository;
     @Autowired
     private ProjectRepository projectRepository;
+    @Autowired
+    private EmailService emailService;
 
 
     public Task getTaskById(Long id) {
@@ -77,7 +79,16 @@ public class TaskService {
         Users user = userRepository.findById(userId).orElseThrow();
         task.setAssignedTo(user);
         task.setStatus(TaskStatus.ASSIGNED);
-        return toDto(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        // Send email notification
+        if (user.getUsername() != null && user.getUsername().contains("@")) { // crude email check
+            emailService.sendEmail(
+                user.getUsername(),
+                "Task Assigned: " + task.getTitle(),
+                "You have been assigned a new task: " + task.getTitle() + "\nDescription: " + task.getDescription()
+            );
+        }
+        return toDto(savedTask);
     }
 
     public List<TaskDto> getTasksForProject(Long projectId) {
@@ -89,6 +100,28 @@ public class TaskService {
         Users currentUser = getCurrentUser();
         return taskRepository.findByAssignedTo(currentUser)
                 .stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    // For manager: all filters optional
+    public List<TaskDto> getTasksByFilters(TaskStatus status, Long teamMemberId, Long projectId) {
+        List<Task> tasks = taskRepository.findAll();
+        return tasks.stream()
+                .filter(t -> status == null || t.getStatus() == status)
+                .filter(t -> teamMemberId == null || (t.getAssignedTo() != null && t.getAssignedTo().getId().equals(teamMemberId)))
+                .filter(t -> projectId == null || (t.getProject() != null && t.getProject().getId().equals(projectId)))
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // For team member: only their own tasks, filter by status and project
+    public List<TaskDto> getTasksForCurrentUserWithFilters(TaskStatus status, Long projectId) {
+        Users currentUser = getCurrentUser();
+        List<Task> tasks = taskRepository.findByAssignedTo(currentUser);
+        return tasks.stream()
+                .filter(t -> status == null || t.getStatus() == status)
+                .filter(t -> projectId == null || (t.getProject() != null && t.getProject().getId().equals(projectId)))
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     private TaskDto toDto(Task task) {
