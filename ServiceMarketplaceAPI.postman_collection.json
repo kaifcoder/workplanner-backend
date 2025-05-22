@@ -1,0 +1,250 @@
+{
+  "info": {
+    "_postman_id": "b1e1e1e1-1234-5678-9101-abcdefabcdef",
+    "name": "Service Marketplace API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "API collection for the Service Marketplace application."
+  },
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"TEAM_MEMBER\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"string\",\n  \"password\": \"string\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "Project - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Project Name\",\n  \"description\": \"Description\",\n  \"endDate\": \"2025-12-31\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/projects",
+          "host": ["{{baseUrl}}"],
+          "path": ["projects"]
+        }
+      }
+    },
+    {
+      "name": "Project - Add Member",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/projects/:projectId/members?userId=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["projects", ":projectId", "members"],
+          "query": [
+            { "key": "userId", "value": "1" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Project - List for Current User",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/projects",
+          "host": ["{{baseUrl}}"],
+          "path": ["projects"]
+        }
+      }
+    },
+    {
+      "name": "Project - Get by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/projects/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["projects", ":id"]
+        }
+      }
+    },
+    {
+      "name": "Task - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Task Name\",\n  \"description\": \"Description\",\n  \"projectId\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/task",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "task"]
+        }
+      }
+    },
+    {
+      "name": "Task - Get by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/task/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "task", ":id"]
+        }
+      }
+    },
+    {
+      "name": "Task - Suggest",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Suggested Task\",\n  \"description\": \"Description\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/task/suggest/:projectId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "task", "suggest", ":projectId"]
+        }
+      }
+    },
+    {
+      "name": "Task - Approve",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/task/approve/:taskId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "task", "approve", ":taskId"]
+        }
+      }
+    },
+    {
+      "name": "Task - Reject",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/task/reject/:taskId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "task", "reject", ":taskId"]
+        }
+      }
+    },
+    {
+      "name": "Task - Assign",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/task/assign/:taskId/:userId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "task", "assign", ":taskId", ":userId"]
+        }
+      }
+    },
+    {
+      "name": "Task - List for Project",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/task/project/:projectId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "task", "project", ":projectId"]
+        }
+      }
+    },
+    {
+      "name": "Task - List Assigned to Current User",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/task/assigned",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "task", "assigned"]
+        }
+      }
+    },
+    {
+      "name": "Report - Manager Tasks",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/report/manager/tasks?status=&teamMemberId=&projectId=",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "report", "manager", "tasks"],
+          "query": [
+            { "key": "status", "value": "" },
+            { "key": "teamMemberId", "value": "" },
+            { "key": "projectId", "value": "" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Report - Team Member Tasks",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/report/member/tasks?status=&projectId=",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "report", "member", "tasks"],
+          "query": [
+            { "key": "status", "value": "" },
+            { "key": "projectId", "value": "" }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}
