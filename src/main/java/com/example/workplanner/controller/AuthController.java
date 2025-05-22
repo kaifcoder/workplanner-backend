@@ -1,11 +1,6 @@
 package com.example.workplanner.controller;
 
 
-import com.example.workplanner.Dto.LoginRequest;
-import com.example.workplanner.Dto.Response;
-import com.example.workplanner.model.Users;
-import com.example.workplanner.repository.UserRepository;
-import com.example.workplanner.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -15,6 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.workplanner.Dto.LoginRequest;
+import com.example.workplanner.Dto.Response;
+import com.example.workplanner.model.Users;
+import com.example.workplanner.repository.UserRepository;
+import com.example.workplanner.security.JwtUtils;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,10 +34,11 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody Users user) {
         user.setPassword(encoder.encode(user.getPassword()));
         // Default to TEAM_MEMBER if not provided, else allow MANAGER if explicitly set
+
         if (user.getRole() == null || (!user.getRole().equalsIgnoreCase("MANAGER") && !user.getRole().equalsIgnoreCase("TEAM_MEMBER"))) {
-            user.setRole("TEAM_MEMBER");
+            user.setRole("ROLE_"+"TEAM_MEMBER");
         } else {
-            user.setRole(user.getRole().toUpperCase());
+            user.setRole("ROLE_"+user.getRole().toUpperCase());
         }
         return ResponseEntity.ok(userRepo.save(user));
     }

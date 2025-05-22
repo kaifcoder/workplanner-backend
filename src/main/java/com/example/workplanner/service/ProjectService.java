@@ -1,22 +1,25 @@
 package com.example.workplanner.service;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.example.workplanner.Dto.ProjectDto;
 import com.example.workplanner.Dto.UserDto;
 import com.example.workplanner.model.Project;
 import com.example.workplanner.model.Users;
 import com.example.workplanner.repository.ProjectRepository;
 import com.example.workplanner.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
@@ -31,6 +34,8 @@ public class ProjectService {
 
     public ProjectDto createProject(ProjectDto dto) {
         Users currentUser = getCurrentUser();
+        log.info("Current user: {}", currentUser.getRole());
+        log.info("Creating project: {}", dto.getName());
         Project project = Project.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
