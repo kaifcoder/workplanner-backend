@@ -1,18 +1,21 @@
 package com.example.workplanner.security;
 
+import java.util.Date;
+import java.util.function.Function;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
 import com.example.workplanner.model.Users;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -33,6 +36,7 @@ public class JwtUtils {
         // Generate a JWT token using the secret key and expiration time
         return Jwts.builder()
                 .subject(user.getUsername())
+                .claim("role", user.getRole())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .signWith(secretKey)
