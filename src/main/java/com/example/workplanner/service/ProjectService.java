@@ -65,6 +65,20 @@ public class ProjectService {
         return toDto(project);
     }
 
+    public List<UserDto> getAllTeamMembers() {
+        return userRepository.findAll().stream()
+                .filter(u -> u.getRole() != null && (u.getRole().equalsIgnoreCase("ROLE_TEAM_MEMBER") || u.getRole().equalsIgnoreCase("TEAM_MEMBER")))
+                .map(u -> {
+                    UserDto dto = new UserDto();
+                    dto.setId(u.getId());
+                    dto.setUsername(u.getUsername());
+                    dto.setRole(u.getRole());
+                    // Optionally set projectIds, assignedTaskIds, suggestedTaskIds if needed
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
     private ProjectDto toDto(Project project) {
         ProjectDto dto = new ProjectDto();
         dto.setId(project.getId());
