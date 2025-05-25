@@ -1,15 +1,22 @@
 package com.example.workplanner.controller;
 
-import com.example.workplanner.Dto.TaskDto;
-import com.example.workplanner.model.Task;
-import com.example.workplanner.service.TaskService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.example.workplanner.Dto.TaskDto;
+import com.example.workplanner.model.Task;
+import com.example.workplanner.service.TaskService;
 
 @RestController
 @RequestMapping("/api/task")
@@ -19,16 +26,23 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        // Logic to create a task
-        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<TaskDto> createTask(@RequestBody TaskDto taskDto) {
+        TaskDto createdTask = taskService.createTask(taskDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTask(@PathVariable Long id) {
         // Logic to get a task by ID
-        Task task = taskService.getTaskById(id);
-        return ResponseEntity.ok(task);
+        return ResponseEntity.ok(taskService.getTaskById(id));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<TaskDto> updateTask(@PathVariable Long id, @RequestBody TaskDto taskDto) {
+        TaskDto updatedTask = taskService.updateTask(id, taskDto);
+        return ResponseEntity.ok(updatedTask);
     }
 
     // Team member suggests a task

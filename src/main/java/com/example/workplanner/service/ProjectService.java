@@ -79,6 +79,12 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProjectDto> getAllProjects() {
+        return projectRepository.findAll().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     private ProjectDto toDto(Project project) {
         ProjectDto dto = new ProjectDto();
         dto.setId(project.getId());

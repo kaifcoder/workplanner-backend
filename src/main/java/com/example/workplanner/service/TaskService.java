@@ -1,24 +1,28 @@
 package com.example.workplanner.service;
 
-import com.example.workplanner.Dto.TaskDto;
-import com.example.workplanner.Dto.UserDto;
-import com.example.workplanner.Dto.ProjectDto;
-import com.example.workplanner.model.Task;
-import com.example.workplanner.model.TaskStatus;
-import com.example.workplanner.model.Users;
-import com.example.workplanner.model.Project;
-import com.example.workplanner.repository.TaskRepository;
-import com.example.workplanner.repository.UserRepository;
-import com.example.workplanner.repository.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.example.workplanner.Dto.ProjectDto;
+import com.example.workplanner.Dto.TaskDto;
+import com.example.workplanner.Dto.UserDto;
+import com.example.workplanner.model.Project;
+import com.example.workplanner.model.Task;
+import com.example.workplanner.model.TaskStatus;
+import com.example.workplanner.model.Users;
+import com.example.workplanner.repository.ProjectRepository;
+import com.example.workplanner.repository.TaskRepository;
+import com.example.workplanner.repository.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class TaskService {
 
     @Autowired
@@ -35,11 +39,56 @@ public class TaskService {
         return taskRepository.findById(id).orElse(null);
     }
 
-    public Task createTask(Task task) {
-        // Logic to create a task
-//        Users u = customUserDetailService.getCurrentUser();
-//        System.out.println("Current user: " + u.getUsername() + " " + u.getId() + " " + u.getRole());
-        return taskRepository.save(task);
+    // Manager creates a new task for a project and assigns to a user (optional)
+    public TaskDto createTask(TaskDto dto) {
+        Project project = projectRepository.findById(dto.getProjectId()).orElseThrow();
+        Users assignedTo = null;
+        if (dto.getAssignedToUser() != null && dto.getAssignedToUser().getId() != null) {
+            assignedTo = userRepository.findById(dto.getAssignedToUser().getId()).orElse(null);
+        }
+        Task task = Task.builder()
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .dueDate(dto.getDueDate())
+                .createdDate(new java.util.Date())
+                .status(TaskStatus.ASSIGNED)
+                .project(project)
+                .assignedTo(assignedTo)
+                .build();
+        log.info("Creating task: {}", task.getTitle());
+        log.info("Assigned to: {}", assignedTo != null ? assignedTo.getUsername() : "No user assigned");
+        // Save the task
+        log.info("Saving task to repository");
+        log.info("Project: {}", project.getName());
+
+        Task savedTask = taskRepository.save(task);
+        // Optionally send email notification if assignedTo is present
+        if (assignedTo != null && assignedTo.getUsername() != null && assignedTo.getUsername().contains("@")) {
+            emailService.sendEmail(
+                assignedTo.getUsername(),
+                "Task Assigned: " + task.getTitle(),
+                "You have been assigned a new task: " + task.getTitle() + "\nDescription: " + task.getDescription()
+            );
+        }
+        return toDto(savedTask);
+    }
+
+    public TaskDto updateTask(Long id, TaskDto dto) {
+        Task task = taskRepository.findById(id).orElseThrow();
+        if (dto.getTitle() != null) task.setTitle(dto.getTitle());
+        if (dto.getDescription() != null) task.setDescription(dto.getDescription());
+        if (dto.getDueDate() != null) task.setDueDate(dto.getDueDate());
+        if (dto.getStatus() != null) task.setStatus(TaskStatus.valueOf(dto.getStatus()));
+        if (dto.getAssignedToUser() != null && dto.getAssignedToUser().getId() != null) {
+            Users assignedTo = userRepository.findById(dto.getAssignedToUser().getId()).orElse(null);
+            task.setAssignedTo(assignedTo);
+        }
+        if (dto.getProjectId() != null) {
+            Project project = projectRepository.findById(dto.getProjectId()).orElse(null);
+            task.setProject(project);
+        }
+        Task savedTask = taskRepository.save(task);
+        return toDto(savedTask);
     }
 
     private Users getCurrentUser() {

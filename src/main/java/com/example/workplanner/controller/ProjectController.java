@@ -52,5 +52,12 @@ public class ProjectController {
     public List<UserDto> getAllTeamMembers() {
         return projectService.getAllTeamMembers();
     }
+
+    // Get all projects (Manager only)
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('MANAGER')")
+    public List<ProjectDto> getAllProjects() {
+        return projectService.getAllProjects();
+    }
 }
 
