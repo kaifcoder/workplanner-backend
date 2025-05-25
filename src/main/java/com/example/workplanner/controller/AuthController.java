@@ -30,7 +30,7 @@ public class AuthController {
     @Autowired
     private JwtUtils jwtUtils;
 
-  ;  @PostMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Users user) {
         user.setPassword(encoder.encode(user.getPassword()));
         // Default to TEAM_MEMBER if not provided, else allow MANAGER if explicitly set

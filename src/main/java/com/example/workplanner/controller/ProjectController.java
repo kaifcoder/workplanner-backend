@@ -16,7 +16,7 @@ import com.example.workplanner.Dto.UserDto;
 import com.example.workplanner.service.ProjectService;
 
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/api/projects")
 public class ProjectController {
     @Autowired
     private ProjectService projectService;
