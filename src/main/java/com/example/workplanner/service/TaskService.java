@@ -187,6 +187,7 @@ public class TaskService {
             userDto.setUsername(task.getAssignedTo().getUsername());
             userDto.setRole(task.getAssignedTo().getRole());
             dto.setAssignedToUser(userDto);
+            dto.setAssignedToId(task.getAssignedTo().getId());
         }
         if (task.getSuggestedBy() != null) {
             UserDto userDto = new UserDto();
@@ -194,6 +195,7 @@ public class TaskService {
             userDto.setUsername(task.getSuggestedBy().getUsername());
             userDto.setRole(task.getSuggestedBy().getRole());
             dto.setSuggestedByUser(userDto);
+            dto.setSuggestedById(task.getSuggestedBy().getId());
         }
         if (task.getProject() != null) {
             Project project = task.getProject();
@@ -210,6 +212,7 @@ public class TaskService {
                 projectDto.setCreatedBy(createdByDto);
             }
             dto.setProject(projectDto);
+            dto.setProjectId(project.getId());
         }
         return dto;
     }
