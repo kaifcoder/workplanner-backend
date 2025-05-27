@@ -69,5 +69,12 @@ public class ProjectController {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
     }
+
+    // Update a project (Manager only)
+    @PostMapping("/update/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ProjectDto updateProject(@PathVariable Long id, @RequestBody ProjectDto projectDto) {
+        return projectService.updateProject(id, projectDto);
+    }
 }
 

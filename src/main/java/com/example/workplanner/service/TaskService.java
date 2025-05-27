@@ -34,6 +34,15 @@ public class TaskService {
     @Autowired
     private EmailService emailService;
 
+    private void sendEmailAsync(String to, String subject, String body, boolean isHtml) {
+        new Thread(() -> {
+            try {
+                emailService.sendEmail(to, subject, body, isHtml);
+            } catch (Exception e) {
+                log.error("Failed to send email to {}: {}", to, e.getMessage());
+            }
+        }).start();
+    }
 
     public Task getTaskById(Long id) {
         return taskRepository.findById(id).orElse(null);
@@ -64,11 +73,16 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
         // Optionally send email notification if assignedTo is present
         if (assignedTo != null && assignedTo.getUsername() != null && assignedTo.getUsername().contains("@")) {
-            emailService.sendEmail(
-                assignedTo.getUsername(),
-                "Task Assigned: " + task.getTitle(),
-                "You have been assigned a new task: " + task.getTitle() + "\nDescription: " + task.getDescription()
-            );
+            String subject = "🚀 New Task Assigned: " + task.getTitle();
+            String body = "<div style='font-family:sans-serif;'>"
+                + "<h2 style='color:#2d8cf0;'>You have a new task!</h2>"
+                + "<p><strong>Title:</strong> " + task.getTitle() + "</p>"
+                + "<p><strong>Description:</strong> " + (task.getDescription() != null ? task.getDescription() : "No description") + "</p>"
+                + "<p><strong>Due Date:</strong> " + (task.getDueDate() != null ? task.getDueDate() : "Not set") + "</p>"
+                + "<hr style='border:none;border-top:1px solid #eee;'/>"
+                + "<p style='color:#888;'>Please log in to <strong>WorkPlanner</strong> to view more details and manage your tasks.</p>"
+                + "</div>";
+            sendEmailAsync(assignedTo.getUsername(), subject, body, true);
         }
         return toDto(savedTask);
     }
@@ -79,8 +93,9 @@ public class TaskService {
         if (dto.getDescription() != null) task.setDescription(dto.getDescription());
         if (dto.getDueDate() != null) task.setDueDate(dto.getDueDate());
         if (dto.getStatus() != null) task.setStatus(TaskStatus.valueOf(dto.getStatus()));
+        Users assignedTo = task.getAssignedTo();
         if (dto.getAssignedToUser() != null && dto.getAssignedToUser().getId() != null) {
-            Users assignedTo = userRepository.findById(dto.getAssignedToUser().getId()).orElse(null);
+            assignedTo = userRepository.findById(dto.getAssignedToUser().getId()).orElse(null);
             task.setAssignedTo(assignedTo);
         }
         if (dto.getProjectId() != null) {
@@ -88,6 +103,37 @@ public class TaskService {
             task.setProject(project);
         }
         Task savedTask = taskRepository.save(task);
+        // Send email notification on update if assignedTo is present
+        if (assignedTo != null && assignedTo.getUsername() != null && assignedTo.getUsername().contains("@")) {
+            String subject = "📝 Task Updated: " + task.getTitle();
+            String body = "<div style='font-family:sans-serif;'>"
+                + "<h2 style='color:#f0a202;'>A task has been updated!</h2>"
+                + "<p><strong>Title:</strong> " + task.getTitle() + "</p>"
+                + "<p><strong>Description:</strong> " + (task.getDescription() != null ? task.getDescription() : "No description") + "</p>"
+                + "<p><strong>Status:</strong> " + task.getStatus().name() + "</p>"
+                + "<p><strong>Updated By:</strong> " + getCurrentUser().getUsername() + "</p>"
+                + "<p><strong>Due Date:</strong> " + (task.getDueDate() != null ? task.getDueDate() : "Not set") + "</p>"
+                + "<hr style='border:none;border-top:1px solid #eee;'/>"
+                + "<p style='color:#888;'>Please log in to <strong>WorkPlanner</strong> to view the updated task details.</p>"
+                + "</div>";
+            sendEmailAsync(assignedTo.getUsername(), subject, body, true);
+        }
+        // Send update email to manager if available
+        Project project = task.getProject();
+        if (project != null && project.getCreatedBy() != null && project.getCreatedBy().getUsername() != null && project.getCreatedBy().getUsername().contains("@")) {
+            String subject = "📝 Task Updated: " + task.getTitle();
+            String body = "<div style='font-family:sans-serif;'>"
+                + "<h2 style='color:#f0a202;'>A task in your project has been updated!</h2>"
+                + "<p><strong>Title:</strong> " + task.getTitle() + "</p>"
+                + "<p><strong>Description:</strong> " + (task.getDescription() != null ? task.getDescription() : "No description") + "</p>"
+                + "<p><strong>Status:</strong> " + task.getStatus().name() + "</p>"
+                + "<p><strong>Updated By:</strong> " + getCurrentUser().getUsername() + "</p>"
+                + "<p><strong>Due Date:</strong> " + (task.getDueDate() != null ? task.getDueDate() : "Not set") + "</p>"
+                + "<hr style='border:none;border-top:1px solid #eee;'/>"
+                + "<p style='color:#888;'>Please log in to <strong>WorkPlanner</strong> to view the updated task details.</p>"
+                + "</div>";
+            sendEmailAsync(project.getCreatedBy().getUsername(), subject, body, true);
+        }
         return toDto(savedTask);
     }
 
@@ -112,7 +158,23 @@ public class TaskService {
                 .suggestedBy(currentUser)
                 .project(project)
                 .build();
-        return toDto(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        // Send email to manager on new suggestion
+        if (project.getCreatedBy() != null && project.getCreatedBy().getUsername() != null && project.getCreatedBy().getUsername().contains("@")) {
+            String subject = "💡 New Task Suggested: " + task.getTitle();
+            String body = "<div style='font-family:sans-serif;'>"
+                + "<h2 style='color:#2d8cf0;'>A new task has been suggested!</h2>"
+                + "<p><strong>Title:</strong> " + task.getTitle() + "</p>"
+                + "<p><strong>Description:</strong> " + (task.getDescription() != null ? task.getDescription() : "No description") + "</p>"
+                + "<p><strong>Suggested By:</strong> " + currentUser.getUsername() + "</p>"
+                + "<p><strong>Project:</strong> " + project.getName() + "</p>"
+                + "<p><strong>Due Date:</strong> " + (task.getDueDate() != null ? task.getDueDate() : "Not set") + "</p>"
+                + "<hr style='border:none;border-top:1px solid #eee;'/>"
+                + "<p style='color:#888;'>Please log in to <strong>WorkPlanner</strong> to review and approve or reject this suggestion.</p>"
+                + "</div>";
+            sendEmailAsync(project.getCreatedBy().getUsername(), subject, body, true);
+        }
+        return toDto(savedTask);
     }
 
     public TaskDto approveTask(Long taskId) {
@@ -135,11 +197,16 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
         // Send email notification
         if (user.getUsername() != null && user.getUsername().contains("@")) { // crude email check
-            emailService.sendEmail(
-                user.getUsername(),
-                "Task Assigned: " + task.getTitle(),
-                "You have been assigned a new task: " + task.getTitle() + "\nDescription: " + task.getDescription()
-            );
+            String subject = "🚀 New Task Assigned: " + task.getTitle();
+            String body = "<div style='font-family:sans-serif;'>"
+                + "<h2 style='color:#2d8cf0;'>You have a new task!</h2>"
+                + "<p><strong>Title:</strong> " + task.getTitle() + "</p>"
+                + "<p><strong>Description:</strong> " + (task.getDescription() != null ? task.getDescription() : "No description") + "</p>"
+                + "<p><strong>Due Date:</strong> " + (task.getDueDate() != null ? task.getDueDate() : "Not set") + "</p>"
+                + "<hr style='border:none;border-top:1px solid #eee;'/>"
+                + "<p style='color:#888;'>Please log in to <strong>WorkPlanner</strong> to view more details and manage your tasks.</p>"
+                + "</div>";
+            sendEmailAsync(user.getUsername(), subject, body, true);
         }
         return toDto(savedTask);
     }

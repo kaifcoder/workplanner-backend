@@ -89,6 +89,15 @@ public class ProjectService {
         projectRepository.deleteById(id);
     }
 
+    public ProjectDto updateProject(Long id, ProjectDto dto) {
+        Project project = projectRepository.findById(id).orElseThrow();
+        if (dto.getName() != null) project.setName(dto.getName());
+        if (dto.getDescription() != null) project.setDescription(dto.getDescription());
+        if (dto.getEndDate() != null) project.setEndDate(dto.getEndDate());
+        Project saved = projectRepository.save(project);
+        return toDto(saved);
+    }
+
     private ProjectDto toDto(Project project) {
         ProjectDto dto = new ProjectDto();
         dto.setId(project.getId());
