@@ -85,6 +85,10 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    public void deleteProject(Long id) {
+        projectRepository.deleteById(id);
+    }
+
     private ProjectDto toDto(Project project) {
         ProjectDto dto = new ProjectDto();
         dto.setId(project.getId());

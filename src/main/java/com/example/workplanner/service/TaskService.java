@@ -91,6 +91,10 @@ public class TaskService {
         return toDto(savedTask);
     }
 
+    public void deleteTask(Long id) {
+        taskRepository.deleteById(id);
+    }
+
     private Users getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByUsername(auth.getName()).orElseThrow();
