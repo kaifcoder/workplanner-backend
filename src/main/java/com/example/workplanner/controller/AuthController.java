@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,6 +65,15 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, springCookie.toString())
                 .body(response);
+    }
+
+    @PostMapping("/remove-user")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> removeUser(@RequestBody String username) {
+        Users user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User Not Found with username: " + username));
+        userRepo.delete(user);
+        return ResponseEntity.ok("User removed successfully");
     }
 
 }
